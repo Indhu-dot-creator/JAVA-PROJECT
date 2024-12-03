@@ -1,0 +1,147 @@
+import java.awt.*;
+import java.awt.event.*;
+import java.util.ArrayList;
+
+public class AlumniManagementSystem extends Frame implements ActionListener {
+    // Components
+    Label nameLabel, yearLabel, degreeLabel, statusLabel;
+    TextField nameField, yearField, degreeField, searchField;
+    Button addButton, searchButton, displayButton, clearButton;
+    TextArea displayArea;
+
+    // Data storage
+    ArrayList<Alumni> alumniList = new ArrayList<>();
+
+    // Constructor
+    AlumniManagementSystem() {
+        setLayout(new FlowLayout());
+
+        // Name input
+        nameLabel = new Label("Name:");
+        add(nameLabel);
+        nameField = new TextField(20);
+        add(nameField);
+
+        // Graduation year input
+        yearLabel = new Label("Year:");
+        add(yearLabel);
+        yearField = new TextField(5);
+        add(yearField);
+
+        // Degree input
+        degreeLabel = new Label("Degree:");
+        add(degreeLabel);
+        degreeField = new TextField(10);
+        add(degreeField);
+
+        // Buttons
+        addButton = new Button("Add Alumni");
+        add(addButton);
+        addButton.addActionListener(this);
+
+        searchButton = new Button("Search Alumni");
+        add(searchButton);
+        searchButton.addActionListener(this);
+
+        displayButton = new Button("Display All");
+        add(displayButton);
+        displayButton.addActionListener(this);
+
+        clearButton = new Button("Clear");
+        add(clearButton);
+        clearButton.addActionListener(this);
+
+        // Search field
+        searchField = new TextField(20);
+        searchField.setText("Enter name to search");
+        add(searchField);
+
+        // Text area to display results
+        displayArea = new TextArea(10, 50);
+        add(displayArea);
+
+        // Window close event
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent we) {
+                System.exit(0);
+            }
+        });
+
+        setTitle("Alumni Management System");
+        setSize(600, 400);
+        setVisible(true);
+    }
+
+    // Action handling
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == addButton) {
+            String name = nameField.getText();
+            String year = yearField.getText();
+            String degree = degreeField.getText();
+
+            if (!name.isEmpty() && !year.isEmpty() && !degree.isEmpty()) {
+                alumniList.add(new Alumni(name, year, degree));
+                statusLabel = new Label("Alumni added successfully!");
+                add(statusLabel);
+                clearFields();
+            } else {
+                displayArea.setText("Please fill all fields.");
+            }
+        } else if (e.getSource() == searchButton) {
+            String searchName = searchField.getText();
+            boolean found = false;
+            for (Alumni a : alumniList) {
+                if (a.getName().equalsIgnoreCase(searchName)) {
+                    displayArea.setText("Found: " + a);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) displayArea.setText("Alumni not found.");
+        } else if (e.getSource() == displayButton) {
+            StringBuilder sb = new StringBuilder("Alumni List:\n");
+            for (Alumni a : alumniList) {
+                sb.append(a).append("\n");
+            }
+            displayArea.setText(sb.toString());
+        } else if (e.getSource() == clearButton) {
+            clearFields();
+            displayArea.setText("");
+        }
+    }
+
+    // Utility to clear input fields
+    private void clearFields() {
+        nameField.setText("");
+        yearField.setText("");
+        degreeField.setText("");
+        searchField.setText("Enter name to search");
+    }
+
+    // Alumni class
+    class Alumni {
+        private String name;
+        private String graduationYear;
+        private String degree;
+
+        Alumni(String name, String graduationYear, String degree) {
+            this.name = name;
+            this.graduationYear = graduationYear;
+            this.degree = degree;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public String toString() {
+            return name + " | Year: " + graduationYear + " | Degree: " + degree;
+        }
+    }
+
+    // Main method
+    public static void main(String[] args) {
+        new AlumniManagementSystem();
+    }
+}
